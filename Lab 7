@@ -1,0 +1,117 @@
+#include <stdio.h>
+#include <conio.h>
+#include <locale.h> 
+#define n 5
+using namespace std;
+void input_kl(int a[n][n])
+{	
+    printf("Введите элементы матрицы A:\n");
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < n; j++)
+            scanf("%d", &a[i][j]);
+}
+
+void input_f(int a[][n])
+{
+    int i, j;
+    FILE* fp;
+    fp = fopen("C:\\Users\\Admin\\Desktop\\inp.txt", "r");
+    if (fp != NULL)
+    {
+        for (i = 0; i < n; i++)
+            for (j = 0; j < n; j++)
+                fscanf(fp, "%d", &a[i][j]);
+        fclose(fp);
+    }
+    else
+        puts("Файл не открыт");
+}
+
+int* arrayX(int(*a)[n], int* x, void (*pfunc)(int[n][n]))
+{
+    pfunc(a);
+    for (int i = 0; i < n; ++i)
+    {
+        x[i] = 0;
+        for (int j = 0; j < n; ++j)
+        {
+            if (a[i][j] < 0)             
+            {                          
+                x[i] = a[i][j];   
+                break;                
+            }                           
+        }
+    }
+    return x;
+}
+
+int recY( int* array, int arraySize, int& y, int position = 0)
+{
+    if (position == arraySize) 
+    {
+        y = -1;
+        return y;
+    }
+    if (*(array + position) < 0) 
+    {
+        y = *(array + position);
+        return y;
+    }
+    return recY( array, arraySize, ++position);
+}
+
+void output(int a[n][n], int* x, int y)
+{
+    FILE* fp;
+    fp = fopen("C:\\Users\\Admin\\Desktop\\inp.txt", "w");
+    fprintf(fp, "Матрица A:\n");
+    printf("Mатрица A:\n");
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < n; j++)
+        {
+            printf("%5d ", a[i][j]);
+            fprintf(fp, "%5d ", a[i][j]);
+        }
+        printf("\n");
+        fprintf(fp, "\n");
+    }
+    printf("Массив  X:\n");
+    fprintf(fp, " Массив X:\n");
+    for (int i = 0; i < n; i++)
+    {
+        fprintf(fp, "%5d ", x[i]);
+        printf("%5d ", x[i]);
+    }
+       printf("\nY=%i", y);
+       fprintf(fp, "\nY=%i", y);
+       fclose(fp);
+}
+
+int main()
+{
+   setlocale( LC_ALL, "Rus" ); 
+   int a[n][n], x[n], c;
+   void (*pfunc)(int[n][n]);
+       do
+       {
+           printf("Ввод матрицы A:\n1-с клавиатуры\n2-из файла\n");
+                scanf("%d",&c);
+       } 
+   while (c != 1 && c != 2);
+   switch (c)
+   {
+   case 1: pfunc = &input_kl;
+       break;
+   case 2: pfunc = &input_f;
+       break;
+   default:  pfunc = c == '1' ? &input_kl : &input_f;
+
+   }
+   arrayX(a, x, pfunc);
+   int y;
+   recY(x, n, y);
+   output(a, x, y);
+   return 0;
+}
+
